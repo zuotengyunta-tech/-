@@ -1,11 +1,13 @@
 from pytube import Playlist
 
 playlist_url = "https://www.youtube.com/playlist?list=PLExT6MVBKs2CzmEcSCpaSQP_u7XONu6kD"
+
 pl = Playlist(playlist_url)
+pl._video_regex = r"\"url\":\"(/watch\?v=[\w-]*)"   # ← 必須修正ポイント
 
 items = []
 for url in pl.video_urls:
-    items.append(f'<li><a href="{url}" target="_blank">{url}</a></li>')
+    items.append(f'<li><a href="https://www.youtube.com{url}" target="_blank">{url}</a></li>')
 
 html = f"""<!DOCTYPE html>
 <html lang="ja">
