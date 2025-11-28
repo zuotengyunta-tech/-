@@ -1,45 +1,18 @@
-import json
-import subprocess
+from pytube import Playlist
 
 playlist_url = "https://www.youtube.com/playlist?list=PLExT6MVBKs2CzmEcSCpaSQP_u7XONu6kD"
-
-# JSON取得（超高速）
-result = subprocess.run(
-    ["yt-dlp", "-J", playlist_url],
-    capture_output=True,
-    text=True
-)
-
-data = json.loads(result.stdout)
+pl = Playlist(playlist_url)
 
 items = []
-for entry in data["entries"]:
-    if not entry:
-        continue
-    title = entry.get("title", "No Title").replace('"', '\\"')
-    url = f'https://www.youtube.com/watch?v={entry["id"]}'
-    items.append(f'<li><a href="{url}" target="_blank">{title}</a></li>')
-
-count = len(items)
+for url in pl.video_urls:
+    items.append(f'<li><a href="{url}" target="_blank">{url}</a></li>')
 
 html = f"""<!DOCTYPE html>
 <html lang="ja">
-<head>
-<meta charset="utf-8">
-<title>再生リストビュー（yt-dlp高速）</title>
-<style>
-body {{
-    font-family: sans-serif; line-height: 1.8; padding: 20px;
-}}
-li {{
-    margin-bottom: 8px;
-}}
-</style>
-</head>
+<head><meta charset="utf-8"><title>再生リストビュー（高速）</title></head>
 <body>
-  <h1>再生リスト（タイトルあり）</h1>
-  <p>動画数: {count} 件</p>
-  <p>※クリックした動画のみ YouTube 公式で開きます（開始してからは他動画は見れません）</p>
+  <h1>再生リスト（{len(items)}件）</h1>
+  <p>生成完了。</p>
   <ul>
   {'\n  '.join(items)}
   </ul>
@@ -47,7 +20,7 @@ li {{
 </html>
 """
 
-with open("playlist_titles.html", "w", encoding="utf-8") as f:
+with open("playlist.html", "w", encoding="utf-8") as f:
     f.write(html)
 
-print("playlist_titles.html を生成しました（yt-dlp版タイトルあり）。")
+print("playlist.html を生成しました（高速版）。")
